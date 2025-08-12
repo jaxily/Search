@@ -101,7 +101,15 @@ class ModelEnsemble:
                 colsample_bytree=0.8,
                 random_state=42,
                 n_jobs=1,
-                verbose=-1
+                verbose=-1,
+                # Performance optimizations
+                force_col_wise=True,  # Faster for wide datasets
+                force_row_wise=False,  # Disable row-wise for better performance
+                boost_from_average=True,  # Faster training
+                reg_alpha=0.0,  # L1 regularization
+                reg_lambda=0.0,  # L2 regularization
+                min_child_samples=20,  # Reduce overfitting
+                min_child_weight=1e-3  # Reduce overfitting
             )
         except ImportError:
             logger.warning("LightGBM not available")
@@ -187,11 +195,11 @@ class ModelEnsemble:
         # LightGBM
         if 'LightGBM' in self.base_models:
             grid_params['LightGBM'] = {
-                'n_estimators': [50, 100, 200],
-                'learning_rate': [0.05, 0.1, 0.2],
-                'max_depth': [4, 6, 8],
-                'subsample': [0.8, 0.9, 1.0],
-                'colsample_bytree': [0.8, 0.9, 1.0]
+                'n_estimators': [50, 100],  # Reduced from 3 to 2 values
+                'learning_rate': [0.1, 0.2],  # Reduced from 3 to 2 values
+                'max_depth': [4, 6],  # Reduced from 3 to 2 values
+                'subsample': [0.8, 1.0],  # Reduced from 3 to 2 values
+                'colsample_bytree': [0.8, 1.0]  # Reduced from 3 to 2 values
             }
         
         # CatBoost
@@ -257,15 +265,72 @@ class ModelEnsemble:
                 scaler = StandardScaler()
                 X_scaled = scaler.fit_transform(X)
                 
-                # Grid search
-                grid_search = GridSearchCV(
-                    estimator=model,
-                    param_grid=params,
-                    cv=tscv,
-                    scoring='neg_mean_squared_error',
-                    n_jobs=1,  # Single job per model
-                    verbose=0
-                )
+                # Special optimization for LightGBM
+                if model_name == 'LightGBM':
+                    # Use configuration-based optimization
+                    if GRIDSEARCH_CONFIG.get('fast_lightgbm_optimization', False):
+                        # Use fast random search instead of grid search
+                        from sklearn.model_selection import RandomizedSearchCV
+                        from scipy.stats import uniform, randint
+                        
+                        param_distributions = {
+                            'n_estimators': randint(50, 150),
+                            'learning_rate': uniform(0.05, 0.15),
+                            'max_depth': randint(3, 7),
+                            'subsample': uniform(0.7, 0.3),
+                            'colsample_bytree': uniform(0.7, 0.3)
+                        }
+                        
+                        # Add early stopping if enabled
+                        if GRIDSEARCH_CONFIG.get('lightgbm_early_stopping', True):
+                            lightgbm_model = lgb.LGBMRegressor(
+                                **model.get_params(),
+                                callbacks=[lgb.early_stopping(stopping_rounds=10, verbose=False)]
+                            )
+                        else:
+                            lightgbm_model = model
+                        
+                        grid_search = RandomizedSearchCV(
+                            estimator=lightgbm_model,
+                            param_distributions=param_distributions,
+                            n_iter=GRIDSEARCH_CONFIG.get('lightgbm_random_search_iterations', 20),
+                            cv=TimeSeriesSplit(n_splits=GRIDSEARCH_CONFIG.get('lightgbm_cv_folds', 3)),
+                            scoring='neg_mean_squared_error',
+                            n_jobs=1,
+                            verbose=0,
+                            random_state=42
+                        )
+                    else:
+                        # Use reduced grid search
+                        lightgbm_tscv = TimeSeriesSplit(n_splits=GRIDSEARCH_CONFIG.get('lightgbm_cv_folds', 3))
+                        
+                        # Add early stopping if enabled
+                        if GRIDSEARCH_CONFIG.get('lightgbm_early_stopping', True):
+                            lightgbm_model = lgb.LGBMRegressor(
+                                **model.get_params(),
+                                callbacks=[lgb.early_stopping(stopping_rounds=10, verbose=False)]
+                            )
+                        else:
+                            lightgbm_model = model
+                        
+                        grid_search = GridSearchCV(
+                            estimator=lightgbm_model,
+                            param_grid=params,
+                            cv=lightgbm_tscv,
+                            scoring='neg_mean_squared_error',
+                            n_jobs=1,
+                            verbose=0
+                        )
+                else:
+                    # Standard grid search for other models
+                    grid_search = GridSearchCV(
+                        estimator=model,
+                        param_grid=params,
+                        cv=tscv,
+                        scoring='neg_mean_squared_error',
+                        n_jobs=1,  # Single job per model
+                        verbose=0
+                    )
                 
                 grid_search.fit(X_scaled, y)
                 
@@ -314,6 +379,74 @@ class ModelEnsemble:
             'optimized_models': optimized_models,
             'best_scores': best_scores,
             'best_params': self.best_params
+        }
+    
+    def optimize_lightgbm_fast(self, X: np.ndarray, y: np.ndarray) -> Dict[str, Any]:
+        """
+        Fast LightGBM optimization using random search instead of grid search
+        """
+        logger.info("Starting fast LightGBM optimization...")
+        
+        if 'LightGBM' not in self.base_models:
+            logger.warning("LightGBM not available")
+            return {}
+        
+        from sklearn.model_selection import RandomizedSearchCV
+        from scipy.stats import uniform, randint
+        
+        # Create scaler
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
+        
+        # Use random search with fewer iterations for speed
+        param_distributions = {
+            'n_estimators': randint(50, 150),
+            'learning_rate': uniform(0.05, 0.15),
+            'max_depth': randint(3, 7),
+            'subsample': uniform(0.7, 0.3),
+            'colsample_bytree': uniform(0.7, 0.3),
+            'reg_alpha': uniform(0, 0.1),
+            'reg_lambda': uniform(0, 0.1)
+        }
+        
+        # Use early stopping
+        lightgbm_model = lgb.LGBMRegressor(
+            **self.base_models['LightGBM'].get_params(),
+            callbacks=[lgb.early_stopping(stopping_rounds=10, verbose=False)]
+        )
+        
+        # Random search with fewer iterations
+        random_search = RandomizedSearchCV(
+            estimator=lightgbm_model,
+            param_distributions=param_distributions,
+            n_iter=20,  # Only 20 iterations instead of full grid search
+            cv=TimeSeriesSplit(n_splits=3),
+            scoring='neg_mean_squared_error',
+            n_jobs=1,
+            verbose=0,
+            random_state=42
+        )
+        
+        random_search.fit(X_scaled, y)
+        
+        # Store results
+        best_model = random_search.best_estimator_
+        best_score = -random_search.best_score_
+        
+        # Fit best model on full data
+        best_model.fit(X_scaled, y)
+        
+        self.base_models['LightGBM'] = best_model
+        self.scalers['LightGBM'] = scaler
+        self.best_params['LightGBM'] = random_search.best_params_
+        
+        logger.info(f"Fast LightGBM optimization completed. Best score: {best_score:.6f}")
+        
+        return {
+            'model': best_model,
+            'scaler': scaler,
+            'best_params': random_search.best_params_,
+            'best_score': best_score
         }
     
     def create_ensemble(self, ensemble_method: str = 'Voting',

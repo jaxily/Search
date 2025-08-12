@@ -96,7 +96,11 @@ GRIDSEARCH_CONFIG = {
     'auto_parameter_ranges': True,  # Auto-detect parameter ranges
     'parameter_search_method': 'bayesian_optimization',  # Use Bayesian optimization
     'max_iterations': 100,  # Maximum optimization iterations
-    'convergence_threshold': 0.001  # Convergence threshold
+    'convergence_threshold': 0.001,  # Convergence threshold
+    'fast_lightgbm_optimization': True,  # Use fast LightGBM optimization
+    'lightgbm_cv_folds': 3,  # Reduced CV folds for LightGBM
+    'lightgbm_early_stopping': True,  # Enable early stopping for LightGBM
+    'lightgbm_random_search_iterations': 20  # Number of random search iterations
 }
 
 # Performance Targets

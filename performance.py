@@ -420,3 +420,4 @@ class PerformanceAnalyzer:
         report += "=" * 60 + "\n"
         
         return report
+
