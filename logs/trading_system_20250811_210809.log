@@ -1,0 +1,42 @@
+2025-08-11 21:08:09,868 - __main__ - INFO - ============================================================
+2025-08-11 21:08:09,868 - __main__ - INFO - 🚀 ENHANCED WALK-FORWARD ENSEMBLE ML TRADING SYSTEM
+2025-08-11 21:08:09,868 - __main__ - INFO - ============================================================
+2025-08-11 21:08:09,868 - __main__ - INFO - Log file: logs/trading_system_20250811_210809.log
+2025-08-11 21:08:09,875 - __main__ - INFO - 🔧 Setting up environment...
+2025-08-11 21:08:09,875 - __main__ - INFO - 💾 Memory: 1.98 GB available / 8.00 GB total
+2025-08-11 21:08:09,875 - __main__ - WARNING - ⚠️  Low memory detected. Reduced chunk size to 100
+2025-08-11 21:08:09,875 - __main__ - INFO - 🔧 Adjusted max workers to 4
+2025-08-11 21:08:09,875 - __main__ - INFO - 🖥️  CPU Cores: 8
+2025-08-11 21:08:09,875 - __main__ - INFO - 💿 Disk space: 47.30 GB free
+2025-08-11 21:08:09,876 - __main__ - INFO - 📁 Directory ensured: data
+2025-08-11 21:08:09,876 - __main__ - INFO - 📁 Directory ensured: models
+2025-08-11 21:08:09,876 - __main__ - INFO - 📁 Directory ensured: results
+2025-08-11 21:08:09,876 - __main__ - INFO - 📁 Directory ensured: logs
+2025-08-11 21:08:09,876 - __main__ - INFO - 📁 Directory ensured: reports
+2025-08-11 21:08:09,876 - __main__ - INFO - 📁 Directory ensured: cache
+2025-08-11 21:08:09,876 - __main__ - INFO - 📁 Directory ensured: cache/temp
+2025-08-11 21:08:09,876 - __main__ - INFO - 📁 Directory ensured: cache/backup
+2025-08-11 21:08:09,876 - __main__ - INFO - ✅ Environment setup complete
+2025-08-11 21:08:09,876 - __main__ - INFO - 🚀 Starting enhanced data processing...
+2025-08-11 21:08:09,876 - __main__ - INFO - 📥 Loading and processing data...
+2025-08-11 21:08:09,876 - __main__ - INFO - 🔍 Auto-detecting data parameters...
+2025-08-11 21:08:09,876 - __main__ - INFO - 📊 File size: 1.94 MB
+2025-08-11 21:08:09,876 - __main__ - INFO - 🎯 Auto-detected parameters: {'chunk_size': 200, 'use_numba': True, 'max_features': 100, 'pca_components': 30}
+2025-08-11 21:08:11,355 - data_processor - INFO - SmartDataProcessor initialized with 4 workers
+2025-08-11 21:08:11,355 - data_processor - INFO - Auto-detection enabled: True
+2025-08-11 21:08:11,355 - __main__ - INFO - 🔄 Processing data with auto-detection...
+2025-08-11 21:08:11,355 - data_processor - INFO - Loading and processing data from QQQ_20250809_155753_cleaned_v2.csv
+2025-08-11 21:08:11,355 - data_processor - INFO - Loading data from QQQ_20250809_155753_cleaned_v2.csv
+2025-08-11 21:08:11,355 - data_processor - INFO - Available memory: 1.96 GB
+2025-08-11 21:08:11,378 - data_processor - INFO - Date column processed, valid dates: 3769
+2025-08-11 21:08:11,378 - data_processor - INFO - Data loaded successfully: (3769, 32)
+2025-08-11 21:08:11,378 - data_processor - INFO - Assessing data quality...
+2025-08-11 21:08:11,388 - data_processor - INFO - Data quality metrics: {'null_ratio': 1.0, 'inf_ratio': 1.0, 'constant_ratio': 1.0, 'duplicate_ratio': 1.0}
+2025-08-11 21:08:11,388 - data_processor - INFO - Overall quality score: 1.000
+2025-08-11 21:08:11,388 - data_processor - INFO - Auto-detecting optimal splits...
+2025-08-11 21:08:11,392 - data_processor - INFO - Optimal splits detected: {'train_ratio': 0.7, 'train_size': 2638, 'test_size': 1131, 'split_type': 'stratified', 'score': 0.9959561975587701}
+2025-08-11 21:08:11,392 - data_processor - INFO - Auto-cleaning data...
+2025-08-11 21:08:11,404 - data_processor - INFO - Auto-cleaning complete. Shape: (3769, 32) -> (3769, 31)
+2025-08-11 21:08:11,404 - data_processor - INFO - Cleaning steps: ['removed_1_constant_columns', 'dtype_optimization']
+2025-08-11 21:08:11,405 - data_processor - INFO - Auto-engineering features...
+2025-08-11 21:08:11,405 - data_processor - INFO - Feature plan: {'price_features': True, 'technical_indicators': True, 'rolling_features': True, 'volatility_features': True, 'correlation_features': True, 'custom_features': True, 'volume_features': True}

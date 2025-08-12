@@ -1,0 +1,39 @@
+2025-08-11 21:05:49,284 - __main__ - INFO - 🚀 SIMPLIFIED TRADING SYSTEM ANALYSIS
+2025-08-11 21:05:49,284 - __main__ - INFO - ==================================================
+2025-08-11 21:05:49,284 - __main__ - INFO - 📥 Loading data from: QQQ_20250809_155753_cleaned_v2.csv
+2025-08-11 21:05:49,298 - __main__ - INFO - ✅ Data loaded: (3769, 32)
+2025-08-11 21:05:49,300 - __main__ - INFO - 🔢 Numeric columns: 30
+2025-08-11 21:05:49,300 - __main__ - INFO - 📝 Categorical columns: 2
+2025-08-11 21:05:49,312 - __main__ - INFO - 🎯 Target variable 'returns' created
+2025-08-11 21:05:49,312 - __main__ - INFO - ✅ Final data shape: (3768, 32)
+2025-08-11 21:05:49,312 - __main__ - INFO - 🔧 Creating additional features...
+2025-08-11 21:05:49,315 - __main__ - INFO - ✅ Features created, final shape: (3758, 40)
+2025-08-11 21:05:49,315 - __main__ - INFO - 🎯 Preparing features and target...
+2025-08-11 21:05:49,316 - __main__ - INFO - ✅ Features shape: (3758, 37)
+2025-08-11 21:05:49,316 - __main__ - INFO - ✅ Target shape: (3758,)
+2025-08-11 21:05:49,316 - __main__ - INFO - ✅ Feature columns: 37
+2025-08-11 21:05:49,316 - __main__ - INFO - 
+📊 BASIC ANALYSIS RESULTS:
+2025-08-11 21:05:49,316 - __main__ - INFO -    Dataset size: 3758 rows
+2025-08-11 21:05:49,316 - __main__ - INFO -    Features: 37
+2025-08-11 21:05:49,316 - __main__ - INFO -    Date range: 2010-08-31 00:00:00 to 2025-08-08 00:00:00
+2025-08-11 21:05:49,316 - __main__ - INFO -    Average return: 0.000807
+2025-08-11 21:05:49,316 - __main__ - INFO -    Return volatility: 0.013058
+2025-08-11 21:05:49,316 - __main__ - INFO -    Sharpe ratio: 0.061811
+2025-08-11 21:05:49,319 - __main__ - INFO - 
+🔍 TOP 10 FEATURES BY CORRELATION:
+2025-08-11 21:05:49,319 - __main__ - INFO -     1. Daily_Return        : 1.0000
+2025-08-11 21:05:49,319 - __main__ - INFO -     2. price_momentum_5    : 0.4165
+2025-08-11 21:05:49,319 - __main__ - INFO -     3. ROC_10              : 0.3098
+2025-08-11 21:05:49,319 - __main__ - INFO -     4. price_momentum_10   : 0.3098
+2025-08-11 21:05:49,319 - __main__ - INFO -     5. CCI_20              : 0.3022
+2025-08-11 21:05:49,319 - __main__ - INFO -     6. volume_ratio        : 0.2665
+2025-08-11 21:05:49,319 - __main__ - INFO -     7. ROC_20              : 0.2124
+2025-08-11 21:05:49,319 - __main__ - INFO -     8. RSI_14              : 0.2098
+2025-08-11 21:05:49,319 - __main__ - INFO -     9. Volume              : 0.1772
+2025-08-11 21:05:49,319 - __main__ - INFO -    10. Price_Range_Pct     : 0.1718
+2025-08-11 21:05:49,319 - __main__ - INFO - 
+🎉 Analysis completed successfully!
+2025-08-11 21:05:49,319 - __main__ - INFO -    Data file: QQQ_20250809_155753_cleaned_v2.csv
+2025-08-11 21:05:49,319 - __main__ - INFO -    Ensemble method: Voting
+2025-08-11 21:05:49,319 - __main__ - INFO -    Skip walkforward: True

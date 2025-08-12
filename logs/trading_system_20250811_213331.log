@@ -1,0 +1,79 @@
+2025-08-11 21:33:31,364 - __main__ - INFO - ============================================================
+2025-08-11 21:33:31,364 - __main__ - INFO - 🚀 ENHANCED WALK-FORWARD ENSEMBLE ML TRADING SYSTEM
+2025-08-11 21:33:31,364 - __main__ - INFO - ============================================================
+2025-08-11 21:33:31,364 - __main__ - INFO - Log file: logs/trading_system_20250811_213331.log
+2025-08-11 21:33:31,377 - __main__ - INFO - 🔧 Setting up environment...
+2025-08-11 21:33:31,377 - __main__ - INFO - 💾 Memory: 1.63 GB available / 8.00 GB total
+2025-08-11 21:33:31,377 - __main__ - WARNING - ⚠️  Low memory detected. Reduced chunk size to 100
+2025-08-11 21:33:31,377 - __main__ - INFO - 🔧 Adjusted max workers to 4
+2025-08-11 21:33:31,377 - __main__ - INFO - 🖥️  CPU Cores: 8
+2025-08-11 21:33:31,377 - __main__ - INFO - 💿 Disk space: 47.31 GB free
+2025-08-11 21:33:31,377 - __main__ - INFO - 📁 Directory ensured: data
+2025-08-11 21:33:31,377 - __main__ - INFO - 📁 Directory ensured: models
+2025-08-11 21:33:31,377 - __main__ - INFO - 📁 Directory ensured: results
+2025-08-11 21:33:31,377 - __main__ - INFO - 📁 Directory ensured: logs
+2025-08-11 21:33:31,377 - __main__ - INFO - 📁 Directory ensured: reports
+2025-08-11 21:33:31,377 - __main__ - INFO - 📁 Directory ensured: cache
+2025-08-11 21:33:31,377 - __main__ - INFO - 📁 Directory ensured: cache/temp
+2025-08-11 21:33:31,377 - __main__ - INFO - 📁 Directory ensured: cache/backup
+2025-08-11 21:33:31,382 - __main__ - INFO - ✅ Environment setup complete
+2025-08-11 21:33:31,382 - __main__ - INFO - 🚀 Starting enhanced data processing...
+2025-08-11 21:33:31,382 - __main__ - INFO - 📥 Loading and processing data...
+2025-08-11 21:33:31,382 - __main__ - INFO - 🔍 Auto-detecting data parameters...
+2025-08-11 21:33:31,382 - __main__ - INFO - 📊 File size: 18.01 MB
+2025-08-11 21:33:31,382 - __main__ - INFO - 🎯 Auto-detected parameters: {'chunk_size': 200, 'use_numba': False, 'max_features': 100, 'pca_components': 30}
+2025-08-11 21:33:33,111 - data_processor - INFO - SmartDataProcessor initialized with 4 workers
+2025-08-11 21:33:33,111 - data_processor - INFO - Auto-detection enabled: True
+2025-08-11 21:33:33,111 - __main__ - INFO - 🔄 Processing data with auto-detection...
+2025-08-11 21:33:33,111 - data_processor - INFO - Loading and processing data from QQQ_20250809_155753.csv
+2025-08-11 21:33:33,111 - data_processor - INFO - Loading data from QQQ_20250809_155753.csv
+2025-08-11 21:33:33,111 - data_processor - INFO - Available memory: 1.63 GB
+2025-08-11 21:33:33,273 - data_processor - INFO - Date column processed, valid dates: 3770
+2025-08-11 21:33:33,273 - data_processor - INFO - Data loaded successfully: (3770, 468)
+2025-08-11 21:33:33,274 - data_processor - INFO - Assessing data quality...
+2025-08-11 21:33:33,330 - data_processor - INFO - Data quality metrics: {'null_ratio': 0.9166666666666666, 'inf_ratio': 0.9999994332222449, 'constant_ratio': 0.890282131661442, 'duplicate_ratio': 1.0}
+2025-08-11 21:33:33,330 - data_processor - INFO - Overall quality score: 0.952
+2025-08-11 21:33:33,330 - data_processor - INFO - Auto-detecting optimal splits...
+2025-08-11 21:33:33,330 - data_processor - INFO - Optimal splits detected: {'train_ratio': 0.7347480106100795, 'train_size': 2770, 'test_size': 1000, 'split_type': 'random', 'score': 0.0}
+2025-08-11 21:33:33,330 - data_processor - INFO - Auto-cleaning data...
+2025-08-11 21:33:33,639 - data_processor - INFO - Auto-cleaning complete. Shape: (3770, 468) -> (3770, 372)
+2025-08-11 21:33:33,639 - data_processor - INFO - Cleaning steps: ['null_handling', 'infinity_handling', 'removed_57_constant_columns', 'dtype_optimization']
+2025-08-11 21:33:33,641 - data_processor - INFO - Auto-engineering features...
+2025-08-11 21:33:33,641 - data_processor - INFO - Feature plan: {'price_features': True, 'technical_indicators': True, 'rolling_features': True, 'volatility_features': True, 'correlation_features': True, 'custom_features': False, 'volume_features': True}
+2025-08-11 21:33:35,668 - data_processor - INFO - Auto-selecting optimal features...
+2025-08-11 21:33:35,823 - data_processor - WARNING - Feature selection failed: Input X contains NaN.. Using all features.
+2025-08-11 21:33:35,830 - data_processor - INFO - Preparing walk-forward data...
+2025-08-11 21:33:36,061 - data_processor - INFO - Selected 3334 numeric feature columns
+2025-08-11 21:33:36,061 - data_processor - INFO - Feature columns: ['Open', 'High', 'Low', 'Close', 'Volume', 'Dividends', 'Daily_Return', 'Price_Range', 'Price_Range_Pct', 'Typical_Price']...
+2025-08-11 21:33:36,151 - data_processor - INFO - NaN values in X before final cleaning: 201462
+2025-08-11 21:33:36,151 - data_processor - INFO - NaN values in y before final cleaning: 0
+2025-08-11 21:33:36,296 - data_processor - INFO - Walk-forward data prepared: X=(3769, 3334), y=(3769,)
+2025-08-11 21:33:36,306 - data_processor - INFO - Final NaN check - X: 0, y: 0
+2025-08-11 21:33:40,655 - data_processor - INFO - Processed data saved to data/processed_data.parquet
+2025-08-11 21:33:40,657 - data_processor - INFO - Assessing data quality...
+2025-08-11 21:33:41,483 - data_processor - INFO - Data quality metrics: {'null_ratio': 0.984363280563221, 'inf_ratio': 1.0, 'constant_ratio': 0.9997001499250375, 'duplicate_ratio': 1.0}
+2025-08-11 21:33:41,484 - data_processor - INFO - Overall quality score: 0.996
+2025-08-11 21:33:41,486 - data_processor - INFO - Final data quality score: 0.996
+2025-08-11 21:33:46,110 - data_processor - INFO - Processed data saved to data/processed_data.parquet
+2025-08-11 21:33:46,111 - __main__ - INFO - ✅ Data processing complete. Shape: (3770, 3470)
+2025-08-11 21:33:46,111 - __main__ - INFO - 🎯 Feature count: 3470
+2025-08-11 21:33:46,111 - __main__ - INFO - 🔄 Preparing walk-forward data...
+2025-08-11 21:33:46,111 - data_processor - INFO - SmartDataProcessor initialized with 4 workers
+2025-08-11 21:33:46,111 - data_processor - INFO - Auto-detection enabled: True
+2025-08-11 21:33:46,112 - data_processor - INFO - Preparing walk-forward data...
+2025-08-11 21:33:46,253 - data_processor - INFO - Selected 3334 numeric feature columns
+2025-08-11 21:33:46,253 - data_processor - INFO - Feature columns: ['Open', 'High', 'Low', 'Close', 'Volume', 'Dividends', 'Daily_Return', 'Price_Range', 'Price_Range_Pct', 'Typical_Price']...
+2025-08-11 21:33:46,412 - data_processor - INFO - NaN values in X before final cleaning: 201462
+2025-08-11 21:33:46,412 - data_processor - INFO - NaN values in y before final cleaning: 0
+2025-08-11 21:33:46,539 - data_processor - INFO - Walk-forward data prepared: X=(3769, 3334), y=(3769,)
+2025-08-11 21:33:46,546 - data_processor - INFO - Final NaN check - X: 0, y: 0
+2025-08-11 21:33:46,555 - __main__ - INFO - 🤖 Starting ensemble optimization...
+2025-08-11 21:33:46,555 - __main__ - INFO - 🤖 Running ensemble optimization...
+2025-08-11 21:33:46,906 - models - INFO - ModelEnsemble initialized with 4 jobs
+2025-08-11 21:33:46,907 - models - INFO - Initialized 9 base models
+2025-08-11 21:33:46,907 - __main__ - INFO - 🔧 Auto-tuning hyperparameters...
+2025-08-11 21:33:46,907 - models - INFO - Starting individual model optimization...
+2025-08-11 21:33:46,907 - models - INFO - Optimizing RandomForest...
+2025-08-11 21:33:46,907 - models - INFO - Optimizing GradientBoosting...
+2025-08-11 21:33:46,908 - models - INFO - Optimizing XGBoost...
+2025-08-11 21:33:46,908 - models - INFO - Optimizing LightGBM...

@@ -1,0 +1,27 @@
+2025-08-11 21:08:40,068 - __main__ - INFO - ============================================================
+2025-08-11 21:08:40,068 - __main__ - INFO - 🚀 ENHANCED WALK-FORWARD ENSEMBLE ML TRADING SYSTEM
+2025-08-11 21:08:40,068 - __main__ - INFO - ============================================================
+2025-08-11 21:08:40,068 - __main__ - INFO - Log file: logs/trading_system_20250811_210840.log
+2025-08-11 21:08:40,072 - __main__ - INFO - 🔧 Setting up environment...
+2025-08-11 21:08:40,072 - __main__ - INFO - 💾 Memory: 1.91 GB available / 8.00 GB total
+2025-08-11 21:08:40,072 - __main__ - WARNING - ⚠️  Low memory detected. Reduced chunk size to 100
+2025-08-11 21:08:40,072 - __main__ - INFO - 🔧 Adjusted max workers to 4
+2025-08-11 21:08:40,072 - __main__ - INFO - 🖥️  CPU Cores: 8
+2025-08-11 21:08:40,072 - __main__ - INFO - 💿 Disk space: 47.30 GB free
+2025-08-11 21:08:40,072 - __main__ - INFO - 📁 Directory ensured: data
+2025-08-11 21:08:40,072 - __main__ - INFO - 📁 Directory ensured: models
+2025-08-11 21:08:40,072 - __main__ - INFO - 📁 Directory ensured: results
+2025-08-11 21:08:40,072 - __main__ - INFO - 📁 Directory ensured: logs
+2025-08-11 21:08:40,072 - __main__ - INFO - 📁 Directory ensured: reports
+2025-08-11 21:08:40,072 - __main__ - INFO - 📁 Directory ensured: cache
+2025-08-11 21:08:40,072 - __main__ - INFO - 📁 Directory ensured: cache/temp
+2025-08-11 21:08:40,072 - __main__ - INFO - 📁 Directory ensured: cache/backup
+2025-08-11 21:08:40,072 - __main__ - INFO - ✅ Environment setup complete
+2025-08-11 21:08:40,072 - __main__ - INFO - 🚀 Starting enhanced data processing...
+2025-08-11 21:08:40,072 - __main__ - INFO - 📥 Loading and processing data...
+2025-08-11 21:08:40,072 - __main__ - INFO - 🔍 Auto-detecting data parameters...
+2025-08-11 21:08:40,072 - __main__ - INFO - 📊 File size: 1.94 MB
+2025-08-11 21:08:40,072 - __main__ - INFO - 🎯 Auto-detected parameters: {'chunk_size': 200, 'use_numba': True, 'max_features': 100, 'pca_components': 30}
+2025-08-11 21:08:41,157 - __main__ - ERROR - ❌ Error processing data: 'auto_clean_data'
+2025-08-11 21:08:41,157 - __main__ - ERROR - ❌ System execution failed: 'auto_clean_data'
+2025-08-11 21:08:41,187 - __main__ - INFO - 🧹 Cleanup completed
