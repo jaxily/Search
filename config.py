@@ -134,6 +134,17 @@ RISK_CONFIG = {
     'max_portfolio_risk': 0.02  # Maximum portfolio risk per trade
 }
 
+# Transaction Costs & Turnover Control
+TRANSACTION_CONFIG = {
+    'cost_per_trade': 0.001,  # 0.1% per trade
+    'slippage_bps': 5,  # 5 basis points slippage
+    'min_hold_days': 1,  # Minimum holding period (days)
+    'hysteresis_buffer': 0.02,  # 2% buffer to avoid flip-flopping
+    'apply_costs': True,  # Whether to apply transaction costs
+    'apply_slippage': True,  # Whether to apply slippage
+    'apply_holding_period': True,  # Whether to enforce minimum holding period
+}
+
 # Logging Configuration
 LOGGING_CONFIG = {
     'level': 'INFO',

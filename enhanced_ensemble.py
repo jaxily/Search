@@ -28,6 +28,7 @@ import joblib
 import logging
 import warnings
 import sklearn
+from ensemble.trading_utils import EnhancedTradingCalculator, calculate_cost_impact_analysis
 warnings.filterwarnings('ignore')
 
 # Configure logging
@@ -46,7 +47,9 @@ class EnhancedTradingEnsemble:
     - Comprehensive trading metrics
     """
     
-    def __init__(self, random_state: int = 42, n_splits: int = 5):
+    def __init__(self, random_state: int = 42, n_splits: int = 5, 
+                 cost_per_trade: float = 0.001, slippage_bps: float = 5.0,
+                 min_hold_days: int = 1, hysteresis_buffer: float = 0.02):
         self.random_state = random_state
         self.n_splits = n_splits
         self.models = {}
@@ -57,18 +60,72 @@ class EnhancedTradingEnsemble:
         self.oof_probabilities = {}
         self.is_fitted = False
         
+        # Initialize enhanced trading calculator
+        self.trading_calculator = EnhancedTradingCalculator(
+            cost_per_trade=cost_per_trade,
+            slippage_bps=slippage_bps,
+            min_hold_days=min_hold_days,
+            hysteresis_buffer=hysteresis_buffer
+        )
+        
+        # Store transaction parameters
+        self.cost_per_trade = cost_per_trade
+        self.slippage_bps = slippage_bps
+        self.min_hold_days = min_hold_days
+        self.hysteresis_buffer = hysteresis_buffer
+        
         # Initialize models with proper pipelines
         self._initialize_models()
         
         logger.info("EnhancedTradingEnsemble initialized successfully")
+        logger.info(f"Transaction costs: {cost_per_trade:.4f}, Slippage: {slippage_bps} bps")
+        logger.info(f"Min hold days: {min_hold_days}, Hysteresis: {hysteresis_buffer:.4f}")
     
     def _validate_n_splits(self, n_samples: int) -> int:
         """Validate and adjust n_splits based on data size"""
-        max_splits = max(1, n_samples // 20)  # Need at least 20 samples per fold
+        # Ensure minimum fold size to prevent zero predictions
+        min_fold_size = 200  # Minimum samples per fold to avoid zero predictions
+        max_splits = max(1, n_samples // min_fold_size)
+        
         if self.n_splits > max_splits:
-            logger.warning(f"Reducing n_splits from {self.n_splits} to {max_splits} due to insufficient data")
-            return max_splits
+            adjusted_splits = max_splits
+            logger.warning(f"Data size {n_samples} too small for {self.n_splits} splits. "
+                          f"Adjusted to {adjusted_splits} splits to ensure minimum fold size {min_fold_size}.")
+            return adjusted_splits
+        
+        # Additional validation for very small datasets
+        if n_samples < self.n_splits * 2:
+            adjusted_splits = max(1, n_samples // 2)
+            logger.warning(f"Data size {n_samples} too small for {self.n_splits} splits. "
+                          f"Adjusted to {adjusted_splits} splits.")
+            return adjusted_splits
+        
         return self.n_splits
+    
+    def _calculate_warm_up_period(self, n_splits: int, n_samples: int) -> int:
+        """Calculate warm-up period to avoid zero predictions from early folds"""
+        # For TimeSeriesSplit, the first fold has no training data
+        # We need to ensure sufficient training data before making predictions
+        min_training_samples = 500  # Minimum samples needed for training
+        
+        # Calculate warm-up period based on fold structure
+        if n_splits == 1:
+            warm_up = min_training_samples
+        else:
+            # First fold size (no training data)
+            first_fold_size = n_samples // n_splits
+            # Second fold size (minimal training data)
+            second_fold_size = n_samples // n_splits
+            # Warm-up = first two folds
+            warm_up = first_fold_size + second_fold_size
+        
+        # Ensure minimum warm-up period
+        warm_up = max(warm_up, min_training_samples)
+        
+        # Cap at reasonable size
+        warm_up = min(warm_up, n_samples // 3)
+        
+        return warm_up
     
     def _initialize_models(self):
         """Initialize all 9 models with proper sklearn Pipelines"""
@@ -229,6 +286,10 @@ class EnhancedTradingEnsemble:
         # Validate and adjust n_splits based on data size
         actual_n_splits = self._validate_n_splits(len(X))
         
+        # Calculate warm-up period to avoid zero predictions
+        self.warm_up_samples = self._calculate_warm_up_period(actual_n_splits, len(X))
+        logger.info(f"Warm-up period: {self.warm_up_samples} samples (first {self.warm_up_samples/len(X)*100:.1f}% of data)")
+        
         # Use TimeSeriesSplit for proper temporal validation
         tscv = TimeSeriesSplit(n_splits=actual_n_splits)
         
@@ -270,10 +331,18 @@ class EnhancedTradingEnsemble:
         logger.info(f"All models fitted successfully. Active models: {len(self.models)}")
     
     def _generate_oof_probabilities_manual(self, pipeline, X: np.ndarray, y: np.ndarray, tscv) -> np.ndarray:
-        """Generate OOF probabilities manually using TimeSeriesSplit"""
+        """Generate OOF probabilities manually using TimeSeriesSplit with warm-up period handling"""
         oof_proba = np.zeros((len(X), 2))  # 2 classes
         
+        # Skip predictions for warm-up period
+        warm_up_samples = getattr(self, 'warm_up_samples', 0)
+        
         for train_idx, val_idx in tscv.split(X):
+            # Skip early folds that have insufficient training data
+            if len(train_idx) < 100:  # Need at least 100 training samples
+                logger.warning(f"Skipping fold with only {len(train_idx)} training samples")
+                continue
+                
             # Train on training fold
             X_train_fold = X[train_idx]
             y_train_fold = y[train_idx]
@@ -287,17 +356,38 @@ class EnhancedTradingEnsemble:
             val_proba = fold_pipeline.predict_proba(X[val_idx])
             oof_proba[val_idx] = val_proba
         
+        # Set warm-up period to NaN (not zero) to indicate missing data
+        if warm_up_samples > 0:
+            oof_proba[:warm_up_samples] = np.nan
+        
         return oof_proba
     
-    def calibrate_probabilities(self, method: str = 'isotonic') -> None:
-        """Calibrate probabilities using OOF data only (no leakage)"""
+    def calibrate_probabilities(self, method: str = 'auto', plot_histograms: bool = True) -> None:
+        """
+        Calibrate probabilities using OOF data only (no leakage)
+        
+        Args:
+            method: Calibration method ('isotonic', 'sigmoid', or 'auto')
+            plot_histograms: Whether to plot probability histograms
+        """
         if not self.is_fitted:
             raise ValueError("Models must be fitted before calibration")
         
         logger.info(f"Calibrating probabilities using {method} method...")
         
+        # Plot probability histograms before calibration if requested
+        if plot_histograms and hasattr(self, 'X_train') and hasattr(self, 'y_train'):
+            self._plot_pre_calibration_histograms()
+        
         # Use TimeSeriesSplit for calibration
         tscv = TimeSeriesSplit(n_splits=self.n_splits)
+        
+        # If auto method, compare both calibration methods
+        if method == 'auto':
+            logger.info("Comparing calibration methods...")
+            best_method = self._compare_calibration_methods()
+            method = best_method
+            logger.info(f"Selected {method} calibration method")
         
         for name, pipeline in self.models.items():
             try:
@@ -335,6 +425,53 @@ class EnhancedTradingEnsemble:
                 logger.warning(f"Could not calibrate {name}: {e}")
         
         logger.info(f"Probability calibration completed for {len(self.calibrators)} models")
+    
+    def _plot_pre_calibration_histograms(self):
+        """Plot probability histograms before calibration"""
+        try:
+            # Get ensemble probabilities before calibration
+            if self.oof_probabilities:
+                # Use equal weights for initial ensemble
+                n_models = len(self.oof_probabilities)
+                equal_weights = np.ones(n_models) / n_models
+                
+                proba_matrix = np.column_stack(list(self.oof_probabilities.values()))
+                ensemble_probs = np.sum(proba_matrix * equal_weights, axis=1)
+                
+                # Plot histograms
+                self.trading_calculator.plot_probability_histograms(
+                    ensemble_probs, 
+                    threshold=0.5,
+                    save_path='results/qqq_ensemble/pre_calibration_histograms.png'
+                )
+        except Exception as e:
+            logger.warning(f"Could not plot pre-calibration histograms: {e}")
+    
+    def _compare_calibration_methods(self) -> str:
+        """Compare Platt vs Isotonic calibration methods"""
+        try:
+            # Get ensemble probabilities and targets
+            if not self.oof_probabilities or not hasattr(self, 'y_train'):
+                logger.warning("Cannot compare calibration methods - missing data")
+                return 'isotonic'  # Default fallback
+            
+            # Use equal weights for comparison
+            n_models = len(self.oof_probabilities)
+            equal_weights = np.ones(n_models) / n_models
+            
+            proba_matrix = np.column_stack(list(self.oof_probabilities.values()))
+            ensemble_probs = np.sum(proba_matrix * equal_weights, axis=1)
+            
+            # Compare methods
+            results = self.trading_calculator.compare_calibration_methods(
+                ensemble_probs, self.y_train, cv_splits=self.n_splits
+            )
+            
+            return results.get('best_method', 'isotonic')
+            
+        except Exception as e:
+            logger.warning(f"Error comparing calibration methods: {e}")
+            return 'isotonic'  # Default fallback
     
     def optimize_ensemble_weights(self, y: np.ndarray, 
                                 method: str = 'sharpe',
@@ -545,83 +682,240 @@ class EnhancedTradingEnsemble:
         return optimal_weights
     
     def _optimize_threshold(self, ensemble_proba: np.ndarray, y: np.ndarray,
-                           cost_per_trade: float, slippage: float) -> float:
-        """Find optimal threshold for trading decisions"""
-        logger.info("Optimizing trading threshold...")
+                           cost_per_trade: float = None, slippage: float = None) -> float:
+        """
+        Find optimal threshold for trading decisions with enhanced diagnostics
         
-        # Grid search for threshold
-        thresholds = np.arange(0.50, 0.71, 0.01)
-        best_sharpe = -np.inf
-        optimal_threshold = 0.5
+        Args:
+            ensemble_proba: Ensemble probabilities
+            y: Asset returns
+            cost_per_trade: Transaction cost per trade
+            slippage: Slippage cost
+        
+        Returns:
+            Optimal threshold
+        """
+        logger.info("Optimizing trading threshold with enhanced diagnostics...")
+        
+        # Plot probability distribution around threshold
+        self.trading_calculator.plot_probability_histograms(
+            ensemble_proba, 
+            threshold=0.5,
+            save_path='results/qqq_ensemble/threshold_optimization_histograms.png'
+        )
+        
+        # Extended grid search for threshold
+        thresholds = np.arange(0.45, 0.76, 0.01)  # Wider range
+        threshold_results = []
         
         for threshold in thresholds:
             returns = self._calculate_trading_returns(ensemble_proba, y, threshold, cost_per_trade, slippage)
             
-            if np.std(returns) > 0:
-                sharpe = np.mean(returns) / np.std(returns) * np.sqrt(252)
-                if sharpe > best_sharpe:
-                    best_sharpe = sharpe
-                    optimal_threshold = threshold
+            # Use robust Sharpe calculation
+            sharpe_result = self.trading_calculator.calculate_robust_sharpe(returns)
+            sharpe = sharpe_result['sharpe_ratio']
+            
+            threshold_results.append({
+                'threshold': threshold,
+                'sharpe': sharpe,
+                'volatility': np.std(returns),
+                'mean_return': np.mean(returns)
+            })
         
-        logger.info(f"Optimal threshold: {optimal_threshold:.3f} (Sharpe: {best_sharpe:.3f})")
+        # Find best threshold
+        valid_results = [r for r in threshold_results if not np.isinf(r['sharpe']) and not np.isnan(r['sharpe'])]
+        
+        if not valid_results:
+            logger.error("⚠️  No valid thresholds found - all Sharpe ratios are infinite or NaN!")
+            return 0.5  # Fallback
+        
+        best_result = max(valid_results, key=lambda x: x['sharpe'])
+        optimal_threshold = best_result['threshold']
+        best_sharpe = best_result['sharpe']
+        
+        # Check for suspicious threshold values
+        if abs(optimal_threshold - 0.50) < 0.01:
+            logger.warning("⚠️  Threshold is suspiciously close to 0.50!")
+            logger.warning("   This may indicate poor calibration or class imbalance")
+            
+            # Look for alternative thresholds
+            alternative_thresholds = [r for r in valid_results if abs(r['threshold'] - 0.50) > 0.05]
+            if alternative_thresholds:
+                alt_best = max(alternative_thresholds, key=lambda x: x['sharpe'])
+                if alt_best['sharpe'] > best_sharpe * 0.95:  # Within 5% of best
+                    logger.info(f"   Alternative threshold {alt_best['threshold']:.3f} (Sharpe: {alt_best['sharpe']:.3f})")
+                    optimal_threshold = alt_best['threshold']
+                    best_sharpe = alt_best['sharpe']
+        
+        # Log optimization results
+        logger.info(f"Threshold optimization completed:")
+        logger.info(f"  Optimal threshold: {optimal_threshold:.3f}")
+        logger.info(f"  Best Sharpe: {best_sharpe:.3f}")
+        logger.info(f"  Threshold range tested: {thresholds[0]:.2f} - {thresholds[-1]:.2f}")
+        
+        # Plot Sharpe vs threshold curve
+        self._plot_sharpe_vs_threshold(threshold_results, optimal_threshold)
+        
         return optimal_threshold
     
+    def _plot_sharpe_vs_threshold(self, threshold_results: List[Dict], optimal_threshold: float):
+        """Plot Sharpe ratio vs threshold curve"""
+        try:
+            thresholds = [r['threshold'] for r in threshold_results]
+            sharpes = [r['sharpe'] for r in threshold_results]
+            
+            plt.figure(figsize=(12, 8))
+            
+            # Main plot
+            plt.subplot(2, 1, 1)
+            plt.plot(thresholds, sharpes, 'b-', linewidth=2, alpha=0.7)
+            plt.axvline(x=optimal_threshold, color='red', linestyle='--', linewidth=2, 
+                       label=f'Optimal: {optimal_threshold:.3f}')
+            plt.axvline(x=0.50, color='orange', linestyle=':', alpha=0.7, 
+                       label='Default: 0.50')
+            plt.xlabel('Threshold')
+            plt.ylabel('Annualized Sharpe Ratio')
+            plt.title('Sharpe Ratio vs Threshold')
+            plt.legend()
+            plt.grid(True, alpha=0.3)
+            
+            # Zoom around optimal threshold
+            plt.subplot(2, 1, 2)
+            optimal_idx = np.argmin(np.abs(np.array(thresholds) - optimal_threshold))
+            start_idx = max(0, optimal_idx - 5)
+            end_idx = min(len(thresholds), optimal_idx + 6)
+            
+            plt.plot(thresholds[start_idx:end_idx], sharpes[start_idx:end_idx], 'g-', linewidth=2)
+            plt.axvline(x=optimal_threshold, color='red', linestyle='--', linewidth=2, 
+                       label=f'Optimal: {optimal_threshold:.3f}')
+            plt.xlabel('Threshold')
+            plt.ylabel('Annualized Sharpe Ratio')
+            plt.title('Sharpe Ratio vs Threshold (Zoomed)')
+            plt.legend()
+            plt.grid(True, alpha=0.3)
+            
+            plt.tight_layout()
+            plt.savefig('results/qqq_ensemble/sharpe_vs_threshold.png', dpi=300, bbox_inches='tight')
+            plt.close()
+            
+            logger.info("Sharpe vs threshold plot saved to: results/qqq_ensemble/sharpe_vs_threshold.png")
+            
+        except Exception as e:
+            logger.warning(f"Could not create Sharpe vs threshold plot: {e}")
+    
     def _calculate_trading_returns(self, ensemble_proba: np.ndarray, y: np.ndarray,
-                                 threshold: float, cost_per_trade: float, slippage: float) -> np.ndarray:
-        """Calculate trading returns based on probability threshold strategy"""
-        # Trading signal: long if p > threshold
-        signals = (ensemble_proba > threshold).astype(float)
+                                 threshold: float, cost_per_trade: float = None, slippage: float = None) -> np.ndarray:
+        """
+        Calculate trading returns using enhanced trading calculator
         
-        # Position size: (p - threshold) / (1 - threshold), clipped to [0, 1]
-        position_sizes = np.clip((ensemble_proba - threshold) / (1 - threshold), 0, 1)
+        Args:
+            ensemble_proba: Ensemble probabilities
+            y: Asset returns
+            threshold: Trading threshold
+            cost_per_trade: Transaction cost per trade (uses instance default if None)
+            slippage: Slippage cost (uses instance default if None)
         
-        # Apply position sizes to signals
-        weighted_signals = signals * position_sizes
+        Returns:
+            Net returns after costs
+        """
+        # Use instance defaults if not specified
+        if cost_per_trade is None:
+            cost_per_trade = self.cost_per_trade
+        if slippage is None:
+            slippage = self.slippage_bps / 10000.0
         
-        # Calculate strategy returns
-        strategy_returns = weighted_signals * y
+        # Use enhanced trading calculator
+        results = self.trading_calculator.calculate_enhanced_returns(
+            probabilities=ensemble_proba,
+            returns=y,
+            threshold=threshold,
+            apply_costs=True,
+            apply_slippage=True,
+            apply_holding_period=True
+        )
         
-        # Apply transaction costs when signals change
-        signal_changes = np.diff(weighted_signals, prepend=0)
-        transaction_costs = np.abs(signal_changes) * (cost_per_trade + slippage)
-        
-        # Net strategy returns
-        net_returns = strategy_returns - transaction_costs
-        
-        return net_returns
+        return results['net_returns']
     
     def _calculate_trading_metrics(self, ensemble_proba: np.ndarray, y: np.ndarray,
-                                 threshold: float, cost_per_trade: float, slippage: float) -> Dict[str, float]:
-        """Calculate comprehensive trading metrics"""
-        returns = self._calculate_trading_returns(ensemble_proba, y, threshold, cost_per_trade, slippage)
+                                 threshold: float, cost_per_trade: float = None, slippage: float = None) -> Dict[str, float]:
+        """Calculate comprehensive trading metrics with enhanced diagnostics"""
+        # Calculate returns with and without costs for comparison
+        returns_with_costs = self._calculate_trading_returns(ensemble_proba, y, threshold, cost_per_trade, slippage)
+        
+        # Calculate returns without costs for comparison
+        results_no_costs = self.trading_calculator.calculate_enhanced_returns(
+            probabilities=ensemble_proba,
+            returns=y,
+            threshold=threshold,
+            apply_costs=False,
+            apply_slippage=False,
+            apply_holding_period=False
+        )
+        returns_without_costs = results_no_costs['strategy_returns']
+        
+        # Get detailed results for cost analysis
+        results_with_costs = self.trading_calculator.calculate_enhanced_returns(
+            probabilities=ensemble_proba,
+            returns=y,
+            threshold=threshold,
+            apply_costs=True,
+            apply_slippage=True,
+            apply_holding_period=True
+        )
+        
+        # Calculate robust Sharpe ratios
+        sharpe_with_costs = self.trading_calculator.calculate_robust_sharpe(returns_with_costs)
+        sharpe_without_costs = self.trading_calculator.calculate_robust_sharpe(returns_without_costs)
         
         # Basic metrics
-        total_return = np.prod(1 + returns) - 1
-        annualized_return = (1 + total_return) ** (252 / len(returns)) - 1
+        total_return = np.prod(1 + returns_with_costs) - 1
+        annualized_return = (1 + total_return) ** (252 / len(returns_with_costs)) - 1
         
         # Risk metrics
-        volatility = np.std(returns) * np.sqrt(252)
-        sharpe_ratio = annualized_return / volatility if volatility > 0 else 0
+        volatility = np.std(returns_with_costs) * np.sqrt(252)
+        sharpe_ratio = sharpe_with_costs['sharpe_ratio']
         
         # Drawdown
-        cumulative_returns = np.cumprod(1 + returns)
+        cumulative_returns = np.cumprod(1 + returns_with_costs)
         running_max = np.maximum.accumulate(cumulative_returns)
         drawdown = (cumulative_returns - running_max) / running_max
         max_drawdown = np.min(drawdown)
         
         # Trading metrics
-        trades = np.sum(np.abs(np.diff(returns > 0, prepend=False)))
-        turnover = np.sum(np.abs(np.diff(returns, prepend=0)))
+        trades = np.sum(np.abs(np.diff(returns_with_costs > 0, prepend=False)))
+        turnover = np.sum(results_with_costs['turnover'])
         
-        return {
+        # Cost analysis
+        cost_analysis = calculate_cost_impact_analysis(
+            returns_without_costs, returns_with_costs,
+            results_with_costs['costs'], results_with_costs['slippage_costs']
+        )
+        
+        # Enhanced metrics
+        metrics = {
             'total_return': total_return,
             'annualized_return': annualized_return,
             'volatility': volatility,
             'sharpe_ratio': sharpe_ratio,
             'max_drawdown': max_drawdown,
             'trade_count': trades,
-            'turnover': turnover
+            'turnover': turnover,
+            'costs_applied': True,
+            'cost_analysis': cost_analysis,
+            'sharpe_without_costs': sharpe_without_costs['sharpe_ratio'],
+            'sharpe_degradation': cost_analysis['sharpe_degradation'],
+            'annualized_costs': cost_analysis['annualized_costs'],
+            'cost_drag_pct': cost_analysis['cost_drag_pct']
         }
+        
+        # Log cost impact
+        logger.info(f"Cost Impact Summary:")
+        logger.info(f"  Sharpe without costs: {sharpe_without_costs['sharpe_ratio']:.3f}")
+        logger.info(f"  Sharpe with costs: {sharpe_ratio:.3f}")
+        logger.info(f"  Sharpe degradation: {cost_analysis['sharpe_degradation']:.3f}")
+        logger.info(f"  Cost drag: {cost_analysis['cost_drag_pct']:.2f}%")
+        
+        return metrics
     
     def apply_diversity_control(self, correlation_threshold: float = 0.95) -> Dict[str, float]:
         """Apply diversity control by down-weighting highly correlated models"""
