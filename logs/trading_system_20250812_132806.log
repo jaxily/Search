@@ -1,0 +1,209 @@
+2025-08-12 13:28:06,871 - __main__ - INFO - ============================================================
+2025-08-12 13:28:06,871 - __main__ - INFO - 🚀 ENHANCED WALK-FORWARD ENSEMBLE ML TRADING SYSTEM
+2025-08-12 13:28:06,871 - __main__ - INFO - ============================================================
+2025-08-12 13:28:06,871 - __main__ - INFO - Log file: logs/trading_system_20250812_132806.log
+2025-08-12 13:28:06,893 - __main__ - INFO - 🔧 Setting up environment...
+2025-08-12 13:28:06,893 - __main__ - INFO - 💾 Memory: 2.52 GB available / 8.00 GB total
+2025-08-12 13:28:06,893 - __main__ - WARNING - ⚠️  Moderate memory. Using chunk size 500
+2025-08-12 13:28:06,893 - __main__ - INFO - 🔧 Adjusted max workers to 4
+2025-08-12 13:28:06,893 - __main__ - INFO - 🖥️  CPU Cores: 8
+2025-08-12 13:28:06,893 - __main__ - INFO - 💿 Disk space: 40.59 GB free
+2025-08-12 13:28:06,893 - __main__ - INFO - 📁 Directory ensured: data
+2025-08-12 13:28:06,893 - __main__ - INFO - 📁 Directory ensured: models
+2025-08-12 13:28:06,894 - __main__ - INFO - 📁 Directory ensured: results
+2025-08-12 13:28:06,894 - __main__ - INFO - 📁 Directory ensured: logs
+2025-08-12 13:28:06,894 - __main__ - INFO - 📁 Directory ensured: reports
+2025-08-12 13:28:06,894 - __main__ - INFO - 📁 Directory ensured: cache
+2025-08-12 13:28:06,894 - __main__ - INFO - 📁 Directory ensured: cache/temp
+2025-08-12 13:28:06,894 - __main__ - INFO - 📁 Directory ensured: cache/backup
+2025-08-12 13:28:06,894 - __main__ - INFO - ✅ Environment setup complete
+2025-08-12 13:28:06,894 - __main__ - INFO - 🚀 Starting enhanced data processing...
+2025-08-12 13:28:06,894 - __main__ - INFO - 📥 Loading and processing data...
+2025-08-12 13:28:06,894 - __main__ - INFO - 🔍 Auto-detecting data parameters...
+2025-08-12 13:28:06,894 - __main__ - INFO - 📊 File size: 1.94 MB
+2025-08-12 13:28:06,894 - __main__ - INFO - 🎯 Auto-detected parameters: {'chunk_size': 200, 'use_numba': False, 'max_features': 100, 'pca_components': 30}
+2025-08-12 13:28:09,547 - data_processor - INFO - SmartDataProcessor initialized with 4 workers
+2025-08-12 13:28:09,547 - data_processor - INFO - Auto-detection enabled: True
+2025-08-12 13:28:09,547 - __main__ - INFO - 🔄 Processing data with auto-detection...
+2025-08-12 13:28:09,547 - data_processor - INFO - Loading and processing data from QQQ_20250809_155753_cleaned_v2.csv
+2025-08-12 13:28:09,547 - data_processor - INFO - Loading data from QQQ_20250809_155753_cleaned_v2.csv
+2025-08-12 13:28:09,547 - data_processor - INFO - Available memory: 2.49 GB
+2025-08-12 13:28:09,570 - data_processor - INFO - Date column processed, valid dates: 3769
+2025-08-12 13:28:09,571 - data_processor - INFO - Data loaded successfully: (3769, 32)
+2025-08-12 13:28:09,572 - data_processor - INFO - Assessing data quality...
+2025-08-12 13:28:09,579 - data_processor - INFO - Data quality metrics: {'null_ratio': 1.0, 'inf_ratio': 1.0, 'constant_ratio': 1.0, 'duplicate_ratio': 1.0}
+2025-08-12 13:28:09,579 - data_processor - INFO - Overall quality score: 1.000
+2025-08-12 13:28:09,579 - data_processor - INFO - Auto-detecting optimal splits...
+2025-08-12 13:28:09,583 - data_processor - INFO - Optimal splits detected: {'train_ratio': 0.7, 'train_size': 2638, 'test_size': 1131, 'split_type': 'stratified', 'score': 0.9959561975587701}
+2025-08-12 13:28:09,584 - data_processor - INFO - Auto-cleaning data...
+2025-08-12 13:28:09,594 - data_processor - INFO - Auto-cleaning complete. Shape: (3769, 32) -> (3769, 31)
+2025-08-12 13:28:09,594 - data_processor - INFO - Cleaning steps: ['removed_1_constant_columns', 'dtype_optimization']
+2025-08-12 13:28:09,595 - data_processor - INFO - Auto-engineering features...
+2025-08-12 13:28:09,595 - data_processor - INFO - Feature plan: {'price_features': True, 'technical_indicators': True, 'rolling_features': True, 'volatility_features': True, 'correlation_features': True, 'custom_features': True, 'volume_features': True}
+2025-08-12 13:28:09,770 - data_processor - INFO - Auto-selecting optimal features...
+2025-08-12 13:28:09,787 - data_processor - WARNING - Feature selection failed: Input X contains NaN.. Using all features.
+2025-08-12 13:28:09,790 - data_processor - INFO - Preparing walk-forward data...
+2025-08-12 13:28:09,798 - data_processor - INFO - Selected 583 numeric feature columns
+2025-08-12 13:28:09,798 - data_processor - INFO - Feature columns: ['Open', 'High', 'Low', 'Close', 'Volume', 'Daily_Return', 'Price_Range', 'Price_Range_Pct', 'Typical_Price', 'VWAP']...
+2025-08-12 13:28:09,802 - data_processor - INFO - NaN values in X before final cleaning: 35032
+2025-08-12 13:28:09,802 - data_processor - INFO - NaN values in y before final cleaning: 0
+2025-08-12 13:28:09,821 - data_processor - INFO - Walk-forward data prepared: X=(3769, 583), y=(3769,)
+2025-08-12 13:28:09,822 - data_processor - INFO - Final NaN check - X: 0, y: 0
+2025-08-12 13:28:09,823 - data_processor - INFO - Assessing data quality...
+2025-08-12 13:28:09,912 - data_processor - INFO - Data quality metrics: {'null_ratio': 0.9841114988899547, 'inf_ratio': 1.0, 'constant_ratio': 1.0, 'duplicate_ratio': 1.0}
+2025-08-12 13:28:09,912 - data_processor - INFO - Overall quality score: 0.996
+2025-08-12 13:28:09,913 - data_processor - INFO - Final data quality score: 0.996
+2025-08-12 13:28:09,913 - __main__ - INFO - ✅ Data processing complete. Shape: (3769, 585)
+2025-08-12 13:28:09,913 - __main__ - INFO - 🎯 Feature count: 585
+2025-08-12 13:28:09,913 - __main__ - INFO - 🔄 Preparing walk-forward data...
+2025-08-12 13:28:09,913 - data_processor - INFO - SmartDataProcessor initialized with 4 workers
+2025-08-12 13:28:09,913 - data_processor - INFO - Auto-detection enabled: True
+2025-08-12 13:28:09,913 - data_processor - INFO - Preparing walk-forward data...
+2025-08-12 13:28:09,925 - data_processor - INFO - Selected 583 numeric feature columns
+2025-08-12 13:28:09,925 - data_processor - INFO - Feature columns: ['Open', 'High', 'Low', 'Close', 'Volume', 'Daily_Return', 'Price_Range', 'Price_Range_Pct', 'Typical_Price', 'VWAP']...
+2025-08-12 13:28:09,931 - data_processor - INFO - NaN values in X before final cleaning: 35032
+2025-08-12 13:28:09,931 - data_processor - INFO - NaN values in y before final cleaning: 0
+2025-08-12 13:28:09,955 - data_processor - INFO - Walk-forward data prepared: X=(3769, 583), y=(3769,)
+2025-08-12 13:28:09,958 - data_processor - INFO - Final NaN check - X: 0, y: 0
+2025-08-12 13:28:09,960 - __main__ - INFO - 🤖 Starting ensemble optimization...
+2025-08-12 13:28:09,960 - __main__ - INFO - 🤖 Running ensemble optimization...
+2025-08-12 13:28:10,734 - models - INFO - ModelEnsemble initialized with 4 jobs for classification
+2025-08-12 13:28:10,735 - models - INFO - Initialized 9 base models for classification
+2025-08-12 13:28:10,735 - __main__ - INFO - 🔧 Auto-tuning hyperparameters...
+2025-08-12 13:28:10,735 - models - INFO - Starting individual model optimization...
+2025-08-12 13:28:10,735 - models - INFO - Optimizing RandomForest...
+2025-08-12 13:28:10,735 - models - INFO - Optimizing GradientBoosting...
+2025-08-12 13:28:10,735 - models - INFO - Optimizing XGBoost...
+2025-08-12 13:28:10,736 - models - INFO - Optimizing LightGBM...
+2025-08-12 13:28:12,816 - models - ERROR - Error optimizing GradientBoosting: 
+All the 243 fits failed.
+It is very likely that your model is misconfigured.
+You can try to debug the error by setting error_score='raise'.
+
+Below are more details about the failures:
+--------------------------------------------------------------------------------
+243 fits failed with the following error:
+Traceback (most recent call last):
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/model_selection/_validation.py", line 859, in _fit_and_score
+    estimator.fit(X_train, y_train, **fit_params)
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/base.py", line 1365, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/ensemble/_gb.py", line 669, in fit
+    y = self._encode_y(y=y, sample_weight=None)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/ensemble/_gb.py", line 1516, in _encode_y
+    check_classification_targets(y)
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/utils/multiclass.py", line 221, in check_classification_targets
+    raise ValueError(
+ValueError: Unknown label type: continuous. Maybe you are trying to fit a classifier, which expects discrete classes on a regression target with continuous values.
+
+2025-08-12 13:28:12,818 - models - ERROR - Model parameters: {'ccp_alpha': 0.0, 'criterion': 'friedman_mse', 'init': None, 'learning_rate': 0.1, 'loss': 'log_loss', 'max_depth': 6, 'max_features': None, 'max_leaf_nodes': None, 'min_impurity_decrease': 0.0, 'min_samples_leaf': 2, 'min_samples_split': 5, 'min_weight_fraction_leaf': 0.0, 'n_estimators': 100, 'n_iter_no_change': None, 'random_state': 42, 'subsample': 1.0, 'tol': 0.0001, 'validation_fraction': 0.1, 'verbose': 0, 'warm_start': False}
+2025-08-12 13:28:12,818 - models - ERROR - Grid parameters: {'n_estimators': [50, 100, 200], 'learning_rate': [0.05, 0.1, 0.2], 'max_depth': [4, 6, 8], 'subsample': [0.8, 0.9, 1.0]}
+2025-08-12 13:28:12,821 - models - ERROR - Traceback: Traceback (most recent call last):
+  File "/Users/jake/Documents/Git/Search/models.py", line 578, in optimize_model_wrapper
+    grid_search.fit(X_scaled, y)
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/base.py", line 1365, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/model_selection/_search.py", line 1051, in fit
+    self._run_search(evaluate_candidates)
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/model_selection/_search.py", line 1605, in _run_search
+    evaluate_candidates(ParameterGrid(self.param_grid))
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/model_selection/_search.py", line 1028, in evaluate_candidates
+    _warn_or_raise_about_fit_failures(out, self.error_score)
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/model_selection/_validation.py", line 505, in _warn_or_raise_about_fit_failures
+    raise ValueError(all_fits_failed_message)
+ValueError: 
+All the 243 fits failed.
+It is very likely that your model is misconfigured.
+You can try to debug the error by setting error_score='raise'.
+
+Below are more details about the failures:
+--------------------------------------------------------------------------------
+243 fits failed with the following error:
+Traceback (most recent call last):
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/model_selection/_validation.py", line 859, in _fit_and_score
+    estimator.fit(X_train, y_train, **fit_params)
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/base.py", line 1365, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/ensemble/_gb.py", line 669, in fit
+    y = self._encode_y(y=y, sample_weight=None)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/ensemble/_gb.py", line 1516, in _encode_y
+    check_classification_targets(y)
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/utils/multiclass.py", line 221, in check_classification_targets
+    raise ValueError(
+ValueError: Unknown label type: continuous. Maybe you are trying to fit a classifier, which expects discrete classes on a regression target with continuous values.
+
+
+2025-08-12 13:28:12,821 - models - INFO - Optimizing CatBoost...
+2025-08-12 13:28:16,942 - models - ERROR - Error optimizing RandomForest: 
+All the 324 fits failed.
+It is very likely that your model is misconfigured.
+You can try to debug the error by setting error_score='raise'.
+
+Below are more details about the failures:
+--------------------------------------------------------------------------------
+324 fits failed with the following error:
+Traceback (most recent call last):
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/model_selection/_validation.py", line 859, in _fit_and_score
+    estimator.fit(X_train, y_train, **fit_params)
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/base.py", line 1365, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/ensemble/_forest.py", line 418, in fit
+    y, expanded_class_weight = self._validate_y_class_weight(y)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/ensemble/_forest.py", line 830, in _validate_y_class_weight
+    check_classification_targets(y)
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/utils/multiclass.py", line 221, in check_classification_targets
+    raise ValueError(
+ValueError: Unknown label type: continuous. Maybe you are trying to fit a classifier, which expects discrete classes on a regression target with continuous values.
+
+2025-08-12 13:28:16,943 - models - ERROR - Model parameters: {'bootstrap': True, 'ccp_alpha': 0.0, 'class_weight': 'balanced', 'criterion': 'gini', 'max_depth': 10, 'max_features': 'sqrt', 'max_leaf_nodes': None, 'max_samples': None, 'min_impurity_decrease': 0.0, 'min_samples_leaf': 2, 'min_samples_split': 5, 'min_weight_fraction_leaf': 0.0, 'monotonic_cst': None, 'n_estimators': 100, 'n_jobs': 1, 'oob_score': False, 'random_state': 42, 'verbose': 0, 'warm_start': False}
+2025-08-12 13:28:16,943 - models - ERROR - Grid parameters: {'n_estimators': [50, 100, 200], 'max_depth': [5, 10, 15, None], 'min_samples_split': [2, 5, 10], 'min_samples_leaf': [1, 2, 4]}
+2025-08-12 13:28:16,945 - models - ERROR - Traceback: Traceback (most recent call last):
+  File "/Users/jake/Documents/Git/Search/models.py", line 578, in optimize_model_wrapper
+    grid_search.fit(X_scaled, y)
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/base.py", line 1365, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/model_selection/_search.py", line 1051, in fit
+    self._run_search(evaluate_candidates)
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/model_selection/_search.py", line 1605, in _run_search
+    evaluate_candidates(ParameterGrid(self.param_grid))
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/model_selection/_search.py", line 1028, in evaluate_candidates
+    _warn_or_raise_about_fit_failures(out, self.error_score)
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/model_selection/_validation.py", line 505, in _warn_or_raise_about_fit_failures
+    raise ValueError(all_fits_failed_message)
+ValueError: 
+All the 324 fits failed.
+It is very likely that your model is misconfigured.
+You can try to debug the error by setting error_score='raise'.
+
+Below are more details about the failures:
+--------------------------------------------------------------------------------
+324 fits failed with the following error:
+Traceback (most recent call last):
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/model_selection/_validation.py", line 859, in _fit_and_score
+    estimator.fit(X_train, y_train, **fit_params)
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/base.py", line 1365, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/ensemble/_forest.py", line 418, in fit
+    y, expanded_class_weight = self._validate_y_class_weight(y)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/ensemble/_forest.py", line 830, in _validate_y_class_weight
+    check_classification_targets(y)
+  File "/Users/jake/venvs/tf-metal/lib/python3.11/site-packages/sklearn/utils/multiclass.py", line 221, in check_classification_targets
+    raise ValueError(
+ValueError: Unknown label type: continuous. Maybe you are trying to fit a classifier, which expects discrete classes on a regression target with continuous values.
+
+
+2025-08-12 13:28:16,946 - models - INFO - Optimizing LogisticRegression...
+2025-08-12 13:28:18,702 - data_processor - INFO - Shutdown signal received. Cleaning up...
+2025-08-12 13:28:19,288 - data_processor - INFO - Shutdown signal received. Cleaning up...
+2025-08-12 13:28:19,335 - __main__ - INFO - 🧹 Cleanup completed
+2025-08-12 13:28:19,614 - data_processor - INFO - Shutdown signal received. Cleaning up...

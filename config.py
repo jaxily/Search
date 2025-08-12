@@ -100,7 +100,13 @@ GRIDSEARCH_CONFIG = {
     'fast_lightgbm_optimization': True,  # Use fast LightGBM optimization
     'lightgbm_cv_folds': 3,  # Reduced CV folds for LightGBM
     'lightgbm_early_stopping': True,  # Enable early stopping for LightGBM
-    'lightgbm_random_search_iterations': 20  # Number of random search iterations
+    'lightgbm_random_search_iterations': 20,  # Number of random search iterations
+    'fast_neural_network_optimization': True,  # Use fast neural network optimization
+    'neural_network_cv_folds': 3,  # Reduced CV folds for neural network
+    'neural_network_early_stopping': True,  # Enable early stopping for neural network
+    'neural_network_max_iter': 1000,  # Reduced max iterations for neural network
+    'skip_neural_network_optimization': False,  # Skip neural network optimization entirely if True
+    'neural_network_verbose': 0  # Verbosity level for neural network training
 }
 
 # Performance Targets

@@ -1,0 +1,170 @@
+{
+  "individual_models": {
+    "RandomForest": {
+      "auc": 1.0,
+      "brier_score": 0.00023935589136223613,
+      "calibration_mae": 0.1637017628872393,
+      "oof_sharpe": 14.690239832136456
+    },
+    "GradientBoosting": {
+      "auc": 1.0,
+      "brier_score": 0.00020164499867338816,
+      "calibration_mae": 0.059999999999999984,
+      "oof_sharpe": 14.926664614587853
+    },
+    "XGBoost": {
+      "auc": 1.0,
+      "brier_score": 0.0003950466329927831,
+      "calibration_mae": 0.10823911651410072,
+      "oof_sharpe": 14.822557302793527
+    },
+    "LightGBM": {
+      "auc": 1.0,
+      "brier_score": 0.00020164500122699317,
+      "calibration_mae": 0.06000110142831435,
+      "oof_sharpe": 14.926663583309844
+    },
+    "CatBoost": {
+      "auc": 1.0,
+      "brier_score": 0.00021623612042167724,
+      "calibration_mae": 0.08235532141569275,
+      "oof_sharpe": 14.922233904439096
+    },
+    "LogisticRegression": {
+      "auc": 0.9997129709703695,
+      "brier_score": 0.008046159626629495,
+      "calibration_mae": 0.14466466700890246,
+      "oof_sharpe": 13.931530388029774
+    },
+    "RidgeClassifier": {
+      "auc": 0.9995366123377358,
+      "brier_score": 0.013563048610660234,
+      "calibration_mae": 0.13677487100051886,
+      "oof_sharpe": 13.58458777239946
+    },
+    "SVC": {
+      "auc": 0.9838796785731831,
+      "brier_score": 0.07856218376139291,
+      "calibration_mae": 0.19429732077593687,
+      "oof_sharpe": 10.915814067785062
+    },
+    "MLP": {
+      "auc": 0.9853992188240778,
+      "brier_score": 0.056820702265981564,
+      "calibration_mae": 0.09954617532048218,
+      "oof_sharpe": 12.42315008042433
+    }
+  },
+  "ensemble": {
+    "total_return": Infinity,
+    "annualized_return": Infinity,
+    "volatility": 7.878932290791218,
+    "sharpe_ratio": Infinity,
+    "max_drawdown": NaN,
+    "trade_count": 1879,
+    "turnover": 1878.8815812917207
+  },
+  "diversity": {
+    "pairwise_correlations": {
+      "RandomForest_GradientBoosting": 0.8522756364330086,
+      "RandomForest_XGBoost": 0.8780471919585734,
+      "RandomForest_LightGBM": 0.8854168368004689,
+      "RandomForest_CatBoost": 0.8839199652180767,
+      "RandomForest_LogisticRegression": 0.876320821492976,
+      "RandomForest_RidgeClassifier": 0.8749957273911845,
+      "RandomForest_SVC": 0.8438165169432895,
+      "RandomForest_MLP": 0.884796406713929,
+      "GradientBoosting_XGBoost": 0.8865557472157732,
+      "GradientBoosting_LightGBM": 0.8505630029789384,
+      "GradientBoosting_CatBoost": 0.8785435489374303,
+      "GradientBoosting_LogisticRegression": 0.8728550503197768,
+      "GradientBoosting_RidgeClassifier": 0.8754062403010278,
+      "GradientBoosting_SVC": 0.7637554045563404,
+      "GradientBoosting_MLP": 0.8451763709106883,
+      "XGBoost_LightGBM": 0.8989952264721298,
+      "XGBoost_CatBoost": 0.8912201708178045,
+      "XGBoost_LogisticRegression": 0.8995490886529274,
+      "XGBoost_RidgeClassifier": 0.8991753175088123,
+      "XGBoost_SVC": 0.8302961777036991,
+      "XGBoost_MLP": 0.8720668004855171,
+      "LightGBM_CatBoost": 0.8627528565239804,
+      "LightGBM_LogisticRegression": 0.8711305651491645,
+      "LightGBM_RidgeClassifier": 0.8712391450252521,
+      "LightGBM_SVC": 0.8136431400760389,
+      "LightGBM_MLP": 0.8631428846829461,
+      "CatBoost_LogisticRegression": 0.8808225154314744,
+      "CatBoost_RidgeClassifier": 0.8812021420512989,
+      "CatBoost_SVC": 0.8370541763323203,
+      "CatBoost_MLP": 0.873164398885555,
+      "LogisticRegression_RidgeClassifier": 0.9997231884460307,
+      "LogisticRegression_SVC": 0.8410650333299665,
+      "LogisticRegression_MLP": 0.9794536836081236,
+      "RidgeClassifier_SVC": 0.8407137156098741,
+      "RidgeClassifier_MLP": 0.9789709189604564,
+      "SVC_MLP": 0.8479086993678355
+    },
+    "average_correlation": 0.8746037309247969,
+    "diversity_score": 0.12539626907520307,
+    "high_correlation_pairs": [
+      "LogisticRegression_RidgeClassifier",
+      "LogisticRegression_MLP",
+      "RidgeClassifier_MLP"
+    ]
+  },
+  "oof_performance": {
+    "RandomForest": {
+      "sharpe": 14.690239832136456,
+      "cagr": Infinity,
+      "auc": 0.8541849689323205,
+      "brier": 0.10808548687508658
+    },
+    "GradientBoosting": {
+      "sharpe": 14.926664614587853,
+      "cagr": Infinity,
+      "auc": 0.8541849689323205,
+      "brier": 0.08941363796265643
+    },
+    "XGBoost": {
+      "sharpe": 14.822557302793527,
+      "cagr": Infinity,
+      "auc": 0.8538917994806631,
+      "brier": 0.09185242116542064
+    },
+    "LightGBM": {
+      "sharpe": 14.926663583309844,
+      "cagr": Infinity,
+      "auc": 0.8541849689323204,
+      "brier": 0.08941365748148865
+    },
+    "CatBoost": {
+      "sharpe": 14.922233904439096,
+      "cagr": Infinity,
+      "auc": 0.8541849689323204,
+      "brier": 0.08945596313037239
+    },
+    "LogisticRegression": {
+      "sharpe": 13.931530388029774,
+      "cagr": Infinity,
+      "auc": 0.8536034852464222,
+      "brier": 0.10535801017707132
+    },
+    "RidgeClassifier": {
+      "sharpe": 13.58458777239946,
+      "cagr": Infinity,
+      "auc": 0.8529451748849313,
+      "brier": 0.11040557094366571
+    },
+    "SVC": {
+      "sharpe": 10.915814067785062,
+      "cagr": 2.5546476643445035e+19,
+      "auc": 0.7831894094570495,
+      "brier": 0.20312866732264712
+    },
+    "MLP": {
+      "sharpe": 12.42315008042433,
+      "cagr": Infinity,
+      "auc": 0.8403301776324132,
+      "brier": 0.14037151717797514
+    }
+  }
+}
