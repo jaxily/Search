@@ -2,6 +2,12 @@
 
 python3 scripts/manage_data.py full-pull --years 15 --lookforward 12 --verbose
 
+python3 scripts/multi_stock_ensemble.py --csv_path multi_ticker_dataset_20250812_173111_cleaned_20250812_174011_cleaned_20250812_174219.csv --output_dir results/multi_ticker_ensemble_clean --optimization_method sharpe_cagr --n_splits 5 --max_workers 8 --regime_aware
+
+
+
+scripts/multi_stock_ensemble.py --csv_path multi_ticker_dataset_20250812_173111.csv --output_dir results/multi_ticker_ensemble_v2 --optimization_method sharpe_cagr --n_splits 5 --max_workers 8 --regime_aware
+
 
 python3 main.py --data-file QQQ_20250809_155753_cleaned_v2.csv --ensemble-method Voting --skip-walkforward   
 

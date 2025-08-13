@@ -135,16 +135,17 @@ def aggregate_results(results, output_dir):
                     with open(metrics_file, 'r') as f:
                         metrics = json.load(f)
                     
-                    # Extract key metrics
+                    # Extract key metrics from ensemble results
+                    ensemble_metrics = metrics.get('ensemble', {})
                     summary_data.append({
                         'Stock': result['stock'],
                         'Status': 'Success',
                         'Processing_Time_s': result['elapsed_time'],
                         'Optimal_Threshold': metrics.get('optimal_threshold', 'N/A'),
-                        'Sharpe_Ratio': metrics.get('sharpe_ratio', 'N/A'),
-                        'Annualized_Return': metrics.get('annualized_return', 'N/A'),
-                        'Max_Drawdown': metrics.get('max_drawdown', 'N/A'),
-                        'Trade_Count': metrics.get('trade_count', 'N/A')
+                        'Sharpe_Ratio': ensemble_metrics.get('sharpe_ratio', 'N/A'),
+                        'Annualized_Return': ensemble_metrics.get('annualized_return', 'N/A'),
+                        'Max_Drawdown': ensemble_metrics.get('max_drawdown', 'N/A'),
+                        'Trade_Count': ensemble_metrics.get('trade_count', 'N/A')
                     })
                 else:
                     summary_data.append({
