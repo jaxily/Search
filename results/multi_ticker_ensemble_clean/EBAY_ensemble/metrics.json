@@ -1,0 +1,81 @@
+{
+  "individual_models": {
+    "RandomForest": {
+      "auc": 0.9999912228346733,
+      "brier_score": 0.004014570883909169,
+      "calibration_mae": 0.15562550899554503,
+      "oof_sharpe": 7.193646605755478
+    },
+    "XGBoost": {
+      "auc": 1.0,
+      "brier_score": 0.0010178290552563315,
+      "calibration_mae": 0.09163910888642153,
+      "oof_sharpe": 11.634330843866408
+    },
+    "LightGBM": {
+      "auc": 1.0,
+      "brier_score": 0.0002653764482887776,
+      "calibration_mae": 0.01237003737112837,
+      "oof_sharpe": 11.67399247229453
+    },
+    "CatBoost": {
+      "auc": 1.0,
+      "brier_score": 3.16717786003392e-05,
+      "calibration_mae": 0.011911662896392313,
+      "oof_sharpe": 11.643120748256242
+    }
+  },
+  "ensemble": {
+    "total_return": 7.538765182501991e+107,
+    "annualized_return": 1.4295971371858665e+40,
+    "volatility": 7.7869456805602475,
+    "sharpe_ratio": 17.0390080960661,
+    "max_drawdown": -0.001500000000000002,
+    "trade_count": 374,
+    "turnover": 370.10500314124215,
+    "costs_applied": true,
+    "cost_analysis": {
+      "sharpe_without_costs": 17.07996710368722,
+      "sharpe_with_costs": 17.051606255344392,
+      "sharpe_degradation": 0.02836084834282815,
+      "total_transaction_costs": 0.3701050031412421,
+      "total_slippage_costs": 0.18505250157062106,
+      "total_costs": 0.5551575047118632,
+      "cost_drag_pct": 0.1553890013527095,
+      "annualized_costs": 0.20664651578639515,
+      "annualized_turnover": 139.21418020679468,
+      "cost_per_trade": 0.0039877942310704885
+    },
+    "sharpe_without_costs": 17.0673479906947,
+    "sharpe_degradation": 0.02836084834282815,
+    "annualized_costs": 0.20664651578639515,
+    "cost_drag_pct": 0.1553890013527095
+  },
+  "diversity": {
+    "pairwise_correlations": {
+      "RandomForest_XGBoost": NaN,
+      "RandomForest_LightGBM": NaN,
+      "RandomForest_CatBoost": NaN,
+      "XGBoost_LightGBM": NaN,
+      "XGBoost_CatBoost": NaN,
+      "LightGBM_CatBoost": NaN
+    },
+    "average_correlation": NaN,
+    "diversity_score": NaN,
+    "high_correlation_pairs": []
+  },
+  "oof_performance": {
+    "RandomForest": {
+      "error": "Input contains NaN."
+    },
+    "XGBoost": {
+      "error": "Input contains NaN."
+    },
+    "LightGBM": {
+      "error": "Input contains NaN."
+    },
+    "CatBoost": {
+      "error": "Input contains NaN."
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "individual_models": {
+    "RandomForest": {
+      "auc": 0,
+      "brier_score": 1,
+      "calibration_mae": 1,
+      "oof_sharpe": 0
+    },
+    "LightGBM": {
+      "auc": 0,
+      "brier_score": 1,
+      "calibration_mae": 1,
+      "oof_sharpe": 0
+    }
+  },
+  "ensemble": {
+    "total_return": 3.396733691661789e+184,
+    "annualized_return": 7.234773772702624e+75,
+    "volatility": 0.0009609632205388377,
+    "sharpe_ratio": 262022.25859727265,
+    "max_drawdown": 0.0,
+    "trade_count": 1,
+    "turnover": 1.0,
+    "costs_applied": true,
+    "cost_analysis": {
+      "sharpe_without_costs": 0,
+      "sharpe_with_costs": 262236.2416942651,
+      "sharpe_degradation": -262236.2416942651,
+      "total_transaction_costs": 0.001,
+      "total_slippage_costs": 0.0005,
+      "total_costs": 0.0015,
+      "cost_drag_pct": 0.00024469820554649265,
+      "annualized_costs": 0.0006166394779771615,
+      "annualized_turnover": 0.4110929853181077,
+      "cost_per_trade": 0.0015
+    },
+    "sharpe_without_costs": Infinity,
+    "sharpe_degradation": -262236.2416942651,
+    "annualized_costs": 0.0006166394779771615,
+    "cost_drag_pct": 0.00024469820554649265
+  },
+  "diversity": {
+    "pairwise_correlations": {
+      "RandomForest_LightGBM": NaN
+    },
+    "average_correlation": NaN,
+    "diversity_score": NaN,
+    "high_correlation_pairs": []
+  },
+  "oof_performance": {
+    "RandomForest": {
+      "error": "Input contains NaN."
+    },
+    "LightGBM": {
+      "error": "Input contains NaN."
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "2.0": {
+    "RandomForest": 0.0,
+    "XGBoost": 8.326672684688674e-17,
+    "LightGBM": 0.0,
+    "CatBoost": 1.0
+  }
+}

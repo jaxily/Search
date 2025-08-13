@@ -1,0 +1,6 @@
+{
+  "2.0": {
+    "RandomForest": 0.5,
+    "LightGBM": 0.5
+  }
+}

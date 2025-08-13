@@ -1,0 +1,14 @@
+{
+  "ensemble_version": "1.0.0",
+  "random_state": 42,
+  "n_splits": 5,
+  "n_models": 2,
+  "active_models": [
+    "RandomForest",
+    "LightGBM"
+  ],
+  "timestamp": "2025-08-12T17:35:36.715000",
+  "python_version": "2.3.1",
+  "numpy_version": "1.26.4",
+  "sklearn_version": "1.7.1"
+}

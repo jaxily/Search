@@ -1,3 +1,8 @@
+
+
+python3 scripts/manage_data.py full-pull --years 15 --lookforward 12 --verbose
+
+
 python3 main.py --data-file QQQ_20250809_155753_cleaned_v2.csv --ensemble-method Voting --skip-walkforward   
 
 python3 main.py --data-file QQQ_20250809_155753_cleaned_v2.csv --ensemble-method Voting --skip-walkforward   
